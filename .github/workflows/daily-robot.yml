@@ -1,0 +1,33 @@
+name: Daily Robot Update
+
+on:
+  schedule:
+    - cron: '30 5 * * *'  # Robot wakes up at 5:30 AM UTC daily!
+  workflow_dispatch:       # Big red "ON" button
+
+jobs:
+  daily-commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Gives robot permission to write
+    
+    steps:
+      # Step 1: Robot opens your diary
+      - name: Open diary
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}  # Robot's special key
+          
+      # Step 2: Robot writes today's entry (with your email)
+      - name: Robot writes diary (22f1001731@ds.study.iitm.ac.in)
+        run: |
+          echo "🤖 Signed in at $(date -u)" >> robot-diary.txt
+          
+      # Step 3: Robot signs your name and email
+      - name: Robot signs your name
+        run: |
+          git config user.name "nitish-nb007"
+          git config user.email "22f1001731@ds.study.iitm.ac.in"
+          git add robot-diary.txt
+          git commit -m "🤖 Daily robot report [skip ci]"
+          git push
